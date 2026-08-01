@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YouTube Skip Button, But Worse</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080812;
+      --panel: rgba(255, 255, 255, 0.1);
+      --ink: #fff7e8;
+      --youtube: #ff0033;
+      --bad: #ffe900;
+      --acid: #47ff7b;
+      --glitch: #00e5ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: Impact, Haettenschweiler, "Arial Narrow Bold", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255, 0, 51, 0.35), transparent 28rem),
+        radial-gradient(circle at 80% 80%, rgba(0, 229, 255, 0.3), transparent 30rem),
+        linear-gradient(145deg, #050505, var(--bg) 55%, #220014);
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+
+    .home {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: inline-block;
+      margin: 1rem;
+      padding: 0.7rem 1rem;
+      color: #111;
+      background: var(--bad);
+      border: 4px ridge var(--youtube);
+      border-radius: 999px;
+      text-decoration: none;
+      box-shadow: 0 0 1rem rgba(255, 233, 0, 0.7);
+    }
+
+    header, main, footer {
+      width: min(1180px, calc(100% - 2rem));
+      margin-inline: auto;
+    }
+
+    header {
+      text-align: center;
+      padding: 1rem 0 2rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.5rem, 8vw, 6.5rem);
+      line-height: 0.85;
+      text-transform: uppercase;
+      text-shadow: 0.06em 0.06em 0 var(--youtube), -0.05em -0.05em 0 var(--glitch);
+      animation: title-panic 820ms infinite steps(2, jump-none);
+    }
+
+    .intro {
+      max-width: 58rem;
+      margin: 1rem auto;
+      font-family: "Comic Sans MS", "Comic Sans", system-ui, sans-serif;
+      font-size: clamp(1.05rem, 2.3vw, 1.35rem);
+      line-height: 1.4;
+    }
+
+    .fake-player {
+      position: relative;
+      min-height: 34rem;
+      margin-bottom: 2rem;
+      border: 0.55rem solid #1f1f1f;
+      border-radius: 1.25rem;
+      background:
+        linear-gradient(transparent 0 78%, rgba(0, 0, 0, 0.7) 78%),
+        repeating-linear-gradient(45deg, #1b1b26 0 1.2rem, #101018 1.2rem 2.4rem);
+      box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+    }
+
+    .ad-label {
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      padding: 0.4rem 0.6rem;
+      color: #111;
+      background: var(--bad);
+      border-radius: 0.4rem;
+      font-family: Arial, sans-serif;
+      font-weight: 900;
+    }
+
+    .player-message {
+      display: grid;
+      min-height: 14rem;
+      place-items: center;
+      padding: 4rem 1rem 1rem;
+      text-align: center;
+      font-size: clamp(1.8rem, 5vw, 4rem);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .chaos-dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 0.8rem;
+      padding: 0 1rem 1rem;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .meter, .quest-log, .complaint-box {
+      min-height: 6.25rem;
+      padding: 0.8rem;
+      background: rgba(0, 0, 0, 0.62);
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-radius: 0.8rem;
+    }
+
+    .meter-label, .quest-log h2, .complaint-box h2 {
+      margin: 0 0 0.45rem;
+      font-size: 0.95rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .bar {
+      height: 1.1rem;
+      overflow: hidden;
+      background: #080808;
+      border: 2px solid #444;
+      border-radius: 999px;
+    }
+
+    .bar-fill {
+      width: var(--skip-progress, 4%);
+      height: 100%;
+      background: repeating-linear-gradient(90deg, var(--youtube) 0 1rem, var(--bad) 1rem 2rem);
+      transition: width 250ms ease;
+    }
+
+    .quest-log ul {
+      margin: 0;
+      padding-left: 1.2rem;
+      line-height: 1.35;
+    }
+
+    .complaint-box output {
+      display: block;
+      min-height: 2.7rem;
+      color: var(--bad);
+      font-weight: 800;
+    }
+
+    .button-zoo {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 0.8rem;
+      padding: 1rem;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .skip {
+      min-height: 4rem;
+      padding: 0.65rem 0.8rem;
+      color: white;
+      background: #111;
+      border: 3px solid rgba(255, 255, 255, 0.55);
+      border-radius: 0.45rem;
+      font: 900 0.95rem/1.1 Arial, sans-serif;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      cursor: not-allowed;
+      box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.5), 0 0.4rem 0 rgba(0, 0, 0, 0.55);
+    }
+
+    .skip:hover, .skip:focus-visible { outline: 4px dashed var(--bad); }
+    .classic { background: linear-gradient(90deg, #171717, #333); }
+    .countdown::after { content: " in 5... 4... seven?"; color: var(--bad); }
+    .tiny { transform: scale(0.72); transform-origin: left center; }
+    .huge { font-size: 1.4rem; min-height: 5.5rem; }
+    .upsell { background: linear-gradient(135deg, #4b0082, #ff008c); }
+    .mirror { transform: scaleX(-1); }
+    .spinning { animation: spin 2.2s linear infinite; }
+    .breathing { animation: breathe 700ms ease-in-out infinite alternate; }
+    .fake-disabled { opacity: 0.38; filter: grayscale(1); }
+    .legal { font-size: 0.63rem; text-transform: none; }
+    .wrong-way { direction: rtl; unicode-bidi: bidi-override; }
+    .confirm { background: #0d4b22; }
+    .captcha-skip { background: repeating-linear-gradient(90deg, #111 0 0.7rem, #2d2d2d 0.7rem 1.4rem); }
+    .volume { background: #243b64; }
+    .close-enough { background: #7a3300; }
+    .pretend-link { color: #78c7ff; text-decoration: underline; background: transparent; border-style: dotted; }
+    .floating { animation: floaty 1.5s ease-in-out infinite alternate; }
+    .two-factor { background: #5422a8; }
+    .auction { background: #963; }
+    .terms { background: #283842; font-size: 0.75rem; }
+    .boss { background: linear-gradient(45deg, #740000, #222, #740000); border-width: 6px; }
+
+    .skip[data-unlocked="true"] {
+      cursor: pointer;
+      border-color: var(--acid);
+      box-shadow: 0 0 1.1rem rgba(71, 255, 123, 0.8), inset 0 0 0 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .status {
+      min-height: 3rem;
+      margin: 0 1rem 1rem;
+      padding: 0.75rem;
+      font-family: "Comic Sans MS", "Comic Sans", system-ui, sans-serif;
+      color: #101010;
+      background: var(--bad);
+      border-radius: 0.8rem;
+      text-align: center;
+    }
+
+    footer {
+      padding: 1rem 0 2rem;
+      text-align: center;
+      font-family: "Comic Sans MS", "Comic Sans", system-ui, sans-serif;
+      opacity: 0.9;
+    }
+
+    @keyframes title-panic {
+      0% { transform: translate(0, 0) rotate(-0.5deg); }
+      50% { transform: translate(0.08em, -0.04em) rotate(0.5deg); }
+      100% { transform: translate(-0.06em, 0.03em) rotate(-0.5deg); }
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes breathe { to { transform: scale(1.08); } }
+    @keyframes floaty { to { transform: translateY(-0.8rem) rotate(2deg); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="home" href="index.html">← Retreat to safety</a>
+  <header>
+    <h1>Skip Ad?</h1>
+    <p class="intro">Here are twenty self-contained, fake YouTube-style skip buttons that all make skipping feel just a little worse. They do not open windows, trap focus, or actually play ads.</p>
+  </header>
+
+  <main>
+    <section class="fake-player" aria-label="Fake video player with terrible skip buttons">
+      <span class="ad-label">AD 1 of ∞</span>
+      <div class="player-message">Your video will begin after the skip button finishes its side quest.</div>
+      <div class="chaos-dashboard" aria-label="Skip complexity dashboard">
+        <div class="meter">
+          <p class="meter-label">Skip readiness: <strong data-readiness>4%</strong></p>
+          <div class="bar" aria-hidden="true"><div class="bar-fill"></div></div>
+          <small>Progress may go down for morale reasons.</small>
+        </div>
+        <div class="quest-log">
+          <h2>Mandatory side quests</h2>
+          <ul>
+            <li data-quest="countdown">Wait for the wrong countdown.</li>
+            <li data-quest="captcha">Accuse a square of being skip.</li>
+            <li data-quest="terms">Read at least one tiny legal-ish sentence.</li>
+          </ul>
+        </div>
+        <div class="complaint-box">
+          <h2>Skip department memo</h2>
+          <output data-memo>All skip buttons are currently in a meeting.</output>
+        </div>
+      </div>
+      <div class="button-zoo">
+        <button class="skip classic" type="button">Skip Ad ▶</button>
+        <button class="skip countdown" type="button">Skip available</button>
+        <button class="skip tiny" type="button">Microscopic skip</button>
+        <button class="skip huge" type="button">SKIP BUT IT BLOCKS THE SCREEN</button>
+        <button class="skip upsell" type="button">Skip with Premium-ish</button>
+        <button class="skip mirror" type="button">Skip backwards</button>
+        <button class="skip spinning" type="button">Spin to skip</button>
+        <button class="skip breathing" type="button">Skip, probably</button>
+        <button class="skip fake-disabled" type="button">Skip disabled emotionally</button>
+        <button class="skip legal" type="button">By skipping you agree not to have skipped unless skipping is unavailable.</button>
+        <button class="skip wrong-way" type="button">Skip Ad, but read it wrong</button>
+        <button class="skip confirm" type="button">Are you sure? Click the other skip.</button>
+        <button class="skip captcha-skip" type="button">Select all squares with skip</button>
+        <button class="skip volume" type="button">Louder = faster skip 🔊</button>
+        <button class="skip close-enough" type="button">Skipe Add</button>
+        <button class="skip pretend-link floating" type="button">totally real skip link</button>
+        <button class="skip two-factor" type="button">Text me a skip code</button>
+        <button class="skip auction" type="button">Bid 3 seconds to skip</button>
+        <button class="skip terms" type="button">Accept 47-page skip terms</button>
+        <button class="skip boss" type="button">Final boss skip</button>
+      </div>
+      <p class="status" aria-live="polite">Click buttons to unlock more pointless skip bureaucracy.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Real usability note: these are jokes. Please do not ship skip buttons that require a treasure map.</p>
+  </footer>
+
+  <script>
+    const responses = [
+      "Skip request received and misplaced immediately.",
+      "The ad has chosen to continue emotionally.",
+      "Skipping is loading another skip button.",
+      "Close! That was the decoy skip.",
+      "Your video is being held in a very small waiting room.",
+      "Skip denied by the Department of Mild Inconvenience.",
+      "A tiny committee has tabled your skip until next quarter.",
+      "Congratulations: you unlocked a more complicated skip."
+    ];
+
+    const status = document.querySelector(".status");
+    const memo = document.querySelector("[data-memo]");
+    const readiness = document.querySelector("[data-readiness]");
+    const quests = document.querySelectorAll("[data-quest]");
+    const buttons = document.querySelectorAll(".skip");
+    const state = { clicks: 0, progress: 4, completedQuests: new Set() };
+
+    function updateDashboard(button, index) {
+      state.clicks += 1;
+      state.progress = Math.min(99, Math.max(1, state.progress + ((index % 4) * 7) - 3));
+
+      if (button.classList.contains("countdown")) state.completedQuests.add("countdown");
+      if (button.classList.contains("captcha-skip")) state.completedQuests.add("captcha");
+      if (button.classList.contains("legal") || button.classList.contains("terms")) state.completedQuests.add("terms");
+
+      document.documentElement.style.setProperty("--skip-progress", `${state.progress}%`);
+      readiness.textContent = `${state.progress}%`;
+      quests.forEach((quest) => {
+        const done = state.completedQuests.has(quest.dataset.quest);
+        quest.textContent = `${done ? "✓" : "□"} ${quest.textContent.replace(/^[✓□] /, "")}`;
+      });
+
+      if (state.completedQuests.size === quests.length && state.progress > 62) {
+        memo.textContent = "All requirements met. Final boss skip is now almost clickable.";
+        document.querySelector(".boss").dataset.unlocked = "true";
+      } else {
+        memo.textContent = `${quests.length - state.completedQuests.size} side quest(s) and ${Math.max(0, 63 - state.progress)} readiness points remain.`;
+      }
+    }
+
+    buttons.forEach((button, index) => {
+      button.addEventListener("click", () => {
+        updateDashboard(button, index);
+        if (button.classList.contains("boss") && button.dataset.unlocked === "true") {
+          status.textContent = "The final boss skip opens a survey about why you skipped.";
+          button.textContent = "Survey loading... forever";
+          return;
+        }
+
+        status.textContent = responses[(index + state.clicks) % responses.length];
+        button.textContent = button.textContent.includes("Nope") ? "Still not skipping" : `${button.textContent} — Nope`;
+      });
+    });
+  </script>
+</body>
+</html>

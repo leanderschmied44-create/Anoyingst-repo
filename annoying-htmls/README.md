@@ -10,6 +10,7 @@ A tiny, self-contained collection of playful annoying web pages. Each page uses 
 - `dodging-button.html` — A button that dodges the cursor most of the time, with a very small random chance to become clickable briefly.
 - `fake-loader.html` — A fake progress bar that climbs toward 99%, resets, and cycles through silly status messages forever.
 - `marquee.html` — Bonus page with scrolling, bouncing, and blinking text inspired by classic marquee chaos.
+- `youtube-skip-worse.html` — Fake video player with twenty intentionally terrible skip-ad buttons, each contained in one mini HTML page.
 
 ## Accessibility and safety notes
 
