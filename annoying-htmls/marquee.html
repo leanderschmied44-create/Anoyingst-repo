@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Marquee Mayhem</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; font-family: "Comic Sans MS", system-ui, sans-serif; color: #111; background: repeating-linear-gradient(90deg, #fef08a 0 40px, #fdba74 40px 80px); overflow: hidden; }
+    a { position: fixed; top: 1rem; left: 1rem; z-index: 3; padding: 0.6rem 0.85rem; border-radius: 999px; background: #fff; color: #111; font-weight: 900; }
+    h1 { margin: 5rem 1rem 0; text-align: center; font-size: clamp(2.5rem, 10vw, 7rem); animation: blink 550ms step-end infinite; }
+    .lane { position: fixed; left: 0; right: 0; white-space: nowrap; font-size: clamp(1.5rem, 5vw, 4rem); font-weight: 900; text-shadow: 0.06em 0.06em #fff; }
+    .lane.one { top: 28%; animation: scroll 8s linear infinite; }
+    .lane.two { top: 48%; animation: scroll 6s linear infinite reverse; color: #be123c; }
+    .bounce { position: fixed; left: 35%; top: 68%; padding: 0.5rem 1rem; border: 4px solid #111; border-radius: 1rem; background: #67e8f9; font-size: 2rem; font-weight: 900; animation: bounce 1.1s infinite alternate ease-in-out; }
+    @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+    @keyframes blink { 50% { opacity: 0.15; } }
+    @keyframes bounce { to { transform: translate(20vw, -18vh) rotate(18deg); } }
+    @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; } }
+  </style>
+</head>
+<body>
+  <a href="index.html">← Stop the scroll</a>
+  <main aria-label="Marquee-inspired silly text">
+    <h1>LOOK AT THIS TEXT</h1>
+    <p class="lane one">✨ important nonsense ✨ coupon for one free beep ✨ legally distinct marquee energy ✨</p>
+    <p class="lane two">HONK HONK HONK — this sentence refuses to walk normally — HONK HONK HONK</p>
+    <p class="bounce">boing!</p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fake Loader</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; display: grid; place-items: center; padding: 1rem; font-family: "Courier New", monospace; color: #dcfce7; background: #052e16; }
+    main { width: min(700px, 100%); }
+    a { color: #bbf7d0; font-weight: 800; }
+    .panel { margin-top: 1rem; padding: 1.5rem; border: 2px solid #22c55e; border-radius: 1rem; background: #0008; box-shadow: 0 0 2rem #22c55e55; }
+    .bar { height: 2.2rem; border: 2px solid #86efac; border-radius: 999px; overflow: hidden; background: #03140a; }
+    .fill { width: 0%; height: 100%; background: repeating-linear-gradient(45deg, #22c55e, #22c55e 12px, #a3e635 12px, #a3e635 24px); transition: width 170ms linear; }
+    .percent { font-size: 3rem; font-weight: 900; margin: 1rem 0 0.5rem; }
+    .status { min-height: 1.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <a href="index.html">← Cancel eternal loading</a>
+    <section class="panel" aria-labelledby="title">
+      <h1 id="title">Installing More Progress</h1>
+      <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Fake progress"><div class="fill"></div></div>
+      <p class="percent">0%</p>
+      <p class="status" aria-live="polite">Consulting the spinner...</p>
+    </section>
+  </main>
+  <script>
+    const fill = document.querySelector('.fill');
+    const percent = document.querySelector('.percent');
+    const status = document.querySelector('.status');
+    const bar = document.querySelector('.bar');
+    const messages = ['Reticulating splines...', 'Counting invisible pigeons...', 'Negotiating with 99%...', 'Polishing the hourglass...', 'Downloading more patience...', 'Almost there, emotionally...'];
+    let value = 0;
+    let tick = 0;
+    setInterval(() => {
+      tick += 1;
+      value += value < 85 ? 7 : 2;
+      if (value >= 99) value = 3;
+      fill.style.width = `${value}%`;
+      percent.textContent = `${value}%`;
+      status.textContent = messages[tick % messages.length];
+      bar.setAttribute('aria-valuenow', value);
+    }, 450);
+  </script>
+</body>
+</html>

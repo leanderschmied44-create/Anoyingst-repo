@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fake CAPTCHA</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; font-family: system-ui, sans-serif; background: #eef2ff; color: #1f2937; display: grid; place-items: center; padding: 1rem; }
+    .captcha { width: min(620px, 100%); background: white; border: 3px solid #64748b; border-radius: 1rem; box-shadow: 0 1rem 2rem #0002; padding: 1.25rem; }
+    a { color: #4f46e5; font-weight: 700; }
+    h1 { margin-top: 0; }
+    .question { padding: 1rem; border-radius: 0.75rem; background: #dbeafe; font-size: 1.25rem; font-weight: 800; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin: 1rem 0; }
+    label { min-height: 7rem; display: grid; place-items: center; padding: 0.5rem; border: 2px solid #94a3b8; border-radius: 0.75rem; background: #f8fafc; text-align: center; cursor: pointer; }
+    label:has(input:checked) { background: #fef08a; border-color: #ca8a04; }
+    input { transform: scale(1.35); }
+    button { width: 100%; padding: 0.9rem; border: 0; border-radius: 0.75rem; background: #4f46e5; color: white; font-size: 1.1rem; font-weight: 800; cursor: pointer; }
+    .result { min-height: 2rem; margin-top: 1rem; font-weight: 800; }
+  </style>
+</head>
+<body>
+  <main class="captcha">
+    <p><a href="index.html">← Back to safety</a></p>
+    <h1>Totally Legit CAPTCHA</h1>
+    <p class="question" id="question">Select all images containing existential dread.</p>
+    <div class="grid" aria-label="Fake CAPTCHA image choices">
+      <label><input type="checkbox"> A toast staring at the void</label>
+      <label><input type="checkbox"> Three raccoons in a hoodie</label>
+      <label><input type="checkbox"> A cloud with student loans</label>
+      <label><input type="checkbox"> A chair remembering middle school</label>
+      <label><input type="checkbox"> Banana, but legally</label>
+      <label><input type="checkbox"> The concept of Tuesday</label>
+    </div>
+    <button id="verify" type="button">Verify probably</button>
+    <p class="result" id="result" aria-live="polite"></p>
+  </main>
+  <script>
+    const questions = [
+      'Select all images containing existential dread.',
+      'Prove you are not three raccoons.',
+      'Click every square where Tuesday feels suspicious.',
+      'Select all snacks currently having a tiny crisis.'
+    ];
+    let attempt = 0;
+    document.querySelector('#verify').addEventListener('click', () => {
+      attempt += 1;
+      document.querySelector('#question').textContent = questions[attempt % questions.length];
+      document.querySelector('#result').textContent = attempt % 4 === 0
+        ? 'Verification inconclusive, but your vibes are excellent.'
+        : 'Incorrect. Please recalibrate your raccoon aura and try again.';
+    });
+  </script>
+</body>
+</html>

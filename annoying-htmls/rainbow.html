@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rainbow Riot</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      font-family: Impact, Haettenschweiler, "Arial Black", system-ui, sans-serif;
+      color: white;
+      text-align: center;
+      background: linear-gradient(60deg, red, orange, yellow, lime, cyan, blue, violet, red);
+      background-size: 800% 800%;
+      animation: rainbow-pan 4s linear infinite;
+      overflow: hidden;
+    }
+    main { width: min(900px, 92vw); padding: 2rem; }
+    a {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 2;
+      padding: 0.65rem 0.9rem;
+      color: #111;
+      background: #fff;
+      border: 3px solid #111;
+      border-radius: 999px;
+      font-family: system-ui, sans-serif;
+      font-weight: 800;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(3rem, 14vw, 10rem);
+      line-height: 0.85;
+      text-transform: uppercase;
+      text-shadow: 0.06em 0.06em 0 #000, 0 0 1rem #fff;
+      animation: pulse 700ms infinite alternate;
+    }
+    .spinner {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 1rem;
+      font-size: clamp(1.8rem, 6vw, 4rem);
+      color: #111;
+      background: #fffb00;
+      border: 0.4rem dotted #ff00bf;
+      border-radius: 1rem;
+      animation: rotate 2.5s linear infinite;
+    }
+    .floaty {
+      position: fixed;
+      font-size: clamp(1.2rem, 4vw, 3rem);
+      animation: drift 6s linear infinite;
+      opacity: 0.85;
+      pointer-events: none;
+    }
+    .floaty:nth-of-type(1) { left: 8%; top: 18%; animation-delay: -1s; }
+    .floaty:nth-of-type(2) { left: 78%; top: 24%; animation-delay: -3s; }
+    .floaty:nth-of-type(3) { left: 18%; top: 76%; animation-delay: -5s; }
+    .floaty:nth-of-type(4) { left: 68%; top: 70%; animation-delay: -2s; }
+    @keyframes rainbow-pan { to { background-position: 800% 50%; } }
+    @keyframes pulse { to { transform: skew(-4deg) scale(1.06); } }
+    @keyframes rotate { to { transform: rotate(360deg); } }
+    @keyframes drift { 50% { transform: translate(1rem, -2rem) rotate(18deg); } }
+    @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; } }
+  </style>
+</head>
+<body>
+  <a href="index.html">← Escape rainbow</a>
+  <span class="floaty" aria-hidden="true">WOW</span><span class="floaty" aria-hidden="true">ZAP</span><span class="floaty" aria-hidden="true">HONK</span><span class="floaty" aria-hidden="true">GLITTER</span>
+  <main>
+    <h1>Too Many Rainbows!</h1>
+    <p class="spinner">rotating important announcement</p>
+  </main>
+</body>
+</html>
