@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aurora Card</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; display: grid; place-items: center; font-family: ui-sans-serif, system-ui, sans-serif; color: white; background: #020617; overflow: hidden; }
+    body::before { content: ""; position: fixed; inset: -25%; background: conic-gradient(from 120deg, #22d3ee, #818cf8, #f472b6, #34d399, #22d3ee); filter: blur(70px); opacity: 0.5; animation: drift 10s linear infinite; }
+    .card { position: relative; width: min(28rem, calc(100% - 2rem)); padding: 2rem; border: 1px solid #ffffff40; border-radius: 2rem; background: #ffffff18; box-shadow: 0 2rem 5rem #0009; backdrop-filter: blur(18px); }
+    .avatar { width: 5rem; height: 5rem; border-radius: 1.4rem; display: grid; place-items: center; background: linear-gradient(135deg, #38bdf8, #c084fc); font-size: 2.4rem; }
+    h1 { margin: 1.4rem 0 0.5rem; font-size: clamp(2rem, 8vw, 4rem); line-height: 0.9; }
+    p { color: #dbeafe; line-height: 1.6; }
+    a { color: #bae6fd; font-weight: 800; }
+    @keyframes drift { to { transform: rotate(1turn); } }
+  </style>
+</head>
+<body>
+  <article class="card">
+    <div class="avatar" aria-hidden="true">✨</div>
+    <h1>Aurora Energy</h1>
+    <p>A single-file card with soft motion, translucent layers, and just enough glow to feel futuristic.</p>
+    <a href="index.html">← Back to Cool HTMLs</a>
+  </article>
+</body>
+</html>

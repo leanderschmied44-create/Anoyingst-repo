@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Glass Clock</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; display: grid; place-items: center; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #f8fafc; background: linear-gradient(135deg, #0f172a, #1e1b4b); overflow: hidden; }
+    .blob { position: fixed; width: 18rem; height: 18rem; border-radius: 50%; filter: blur(18px); opacity: 0.65; animation: float 7s ease-in-out infinite alternate; }
+    .one { left: 12%; top: 18%; background: #06b6d4; }
+    .two { right: 14%; bottom: 14%; background: #d946ef; animation-delay: -2s; }
+    .clock { position: relative; padding: 2rem; border: 1px solid #ffffff38; border-radius: 2rem; background: #ffffff18; box-shadow: 0 2rem 4rem #0008; text-align: center; backdrop-filter: blur(20px); }
+    #time { font-size: clamp(3rem, 14vw, 8rem); font-weight: 900; letter-spacing: -0.08em; }
+    #date { margin-top: 0.75rem; color: #c7d2fe; font-family: ui-sans-serif, system-ui, sans-serif; }
+    a { display: inline-block; margin-top: 1.5rem; color: #bae6fd; font-family: ui-sans-serif, system-ui, sans-serif; font-weight: 800; }
+    @keyframes float { to { transform: translate(3rem, -2rem) scale(1.15); } }
+  </style>
+</head>
+<body>
+  <div class="blob one"></div><div class="blob two"></div>
+  <main class="clock">
+    <div id="time">00:00:00</div>
+    <div id="date">Loading date…</div>
+    <a href="index.html">← Back to Cool HTMLs</a>
+  </main>
+  <script>
+    const time = document.querySelector('#time');
+    const date = document.querySelector('#date');
+    const tick = () => {
+      const now = new Date();
+      time.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      date.textContent = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    };
+    tick();
+    setInterval(tick, 1000);
+  </script>
+</body>
+</html>
