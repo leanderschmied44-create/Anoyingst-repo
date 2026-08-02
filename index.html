@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Human Verification CAPTCHA</title>
+  <style>
+    :root {
+      --bg: #f7f7f7;
+      --panel: #ffffff;
+      --ink: #1d1d1f;
+      --muted: #555;
+      --line: #d7d7d7;
+      --pink: #ff4fd8;
+      --cyan: #006d85;
+      --yellow: #f6b700;
+      --green: #008a45;
+      color-scheme: light;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: Arial, Helvetica, system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      overflow-x: hidden;
+    }
+
+    main {
+      width: min(980px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+    }
+
+    .captcha {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(270px, 1fr) minmax(280px, 1fr);
+      gap: 1rem;
+      padding: 1.25rem;
+      border: 2px solid var(--line);
+      border-radius: 0.35rem;
+      background: var(--panel);
+      box-shadow: 0 0.7rem 2rem rgba(0, 0, 0, 0.12);
+    }
+
+    h1 {
+      max-width: 38rem;
+      margin: 0 auto 2.7rem;
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      line-height: 1.15;
+      font-weight: 500;
+    }
+
+    .intro {
+      max-width: 34rem;
+      margin: -1.8rem auto 2rem;
+      color: var(--muted);
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    .verify-shell {
+      display: grid;
+      min-height: 62vh;
+      place-items: center;
+    }
+
+    .verify-widget {
+      width: min(430px, 100%);
+      border: 1px solid var(--line);
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    .verify-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 0.85rem;
+      min-height: 84px;
+      padding: 1rem 1.25rem;
+    }
+
+    .verify-check {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border: 2px solid #c7c7c7;
+      border-radius: 2px;
+      background: #fafafa;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: none;
+    }
+
+    .verify-check:hover { transform: none; }
+    .verify-check.is-spinning {
+      border-color: transparent;
+      border-left-color: #138a4b;
+      border-radius: 50%;
+      animation: spin 850ms linear infinite;
+    }
+    .verify-check.is-done {
+      border-color: #138a4b;
+      background: #138a4b;
+    }
+    .verify-check.is-done::after { content: '✓'; font-weight: 800; }
+
+    .verify-text { font-size: 1.05rem; }
+
+    .brand {
+      width: 86px;
+      text-align: center;
+      font-size: 0.68rem;
+      line-height: 1.1;
+      color: #333;
+    }
+
+    .cloud {
+      position: relative;
+      display: block;
+      width: 42px;
+      height: 18px;
+      margin: 0 auto 0.25rem;
+      border-radius: 999px;
+      background: #f38020;
+    }
+    .cloud::before, .cloud::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      border-radius: 50%;
+      background: #f38020;
+    }
+    .cloud::before { left: 8px; width: 18px; height: 18px; }
+    .cloud::after { right: 5px; width: 24px; height: 24px; }
+
+    .brand strong {
+      display: block;
+      letter-spacing: 0.16em;
+      font-size: 0.78rem;
+    }
+
+    .brand a { color: #555; text-decoration: underline; }
+
+    .challenge-area {
+      display: none;
+      margin-top: 2rem;
+    }
+    .challenge-area.is-visible { display: block; }
+
+    .challenge-title {
+      margin: 0 0 1rem;
+      color: var(--muted);
+      font-size: 1rem;
+      text-align: center;
+      font-weight: 400;
+    }
+
+    .prompt-card, .stage, .controls, .feedback {
+      border: 1px solid var(--line);
+      border-radius: 0.35rem;
+      background: #fff;
+    }
+
+    .prompt-card { padding: 1rem; }
+
+    .prompt-label {
+      margin: 0;
+      color: var(--cyan);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #prompt {
+      margin: 0.45rem 0 0;
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+    }
+
+    .stage {
+      position: relative;
+      min-height: 390px;
+      padding: 1rem;
+      overflow: hidden;
+      background: linear-gradient(#6bd3ff 0 44%, #76d66d 44% 100%);
+      transition: background 300ms ease;
+    }
+
+    .stage.rainy { background: linear-gradient(#56616f 0 44%, #497b54 44% 100%); }
+    .stage.stormy { background: linear-gradient(#1b1d32 0 44%, #274431 44% 100%); }
+    .stage.snowy { background: linear-gradient(#c6e8ff 0 44%, #f8fbff 44% 100%); color: #172037; }
+
+    .sun {
+      position: absolute;
+      top: 1rem;
+      right: 1.25rem;
+      width: 5.5rem;
+      height: 5.5rem;
+      border-radius: 50%;
+      background: var(--yellow);
+      box-shadow: 0 0 2rem #fff68a;
+      cursor: pointer;
+      transition: transform 220ms ease, opacity 220ms ease;
+    }
+
+    .sun.hidden { opacity: 0; transform: scale(0) rotate(180deg); pointer-events: none; }
+
+    .weather-symbol {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: start center;
+      padding-top: 1.4rem;
+      font-size: 3rem;
+      pointer-events: none;
+      text-shadow: 0 0.08em 0 rgba(0, 0, 0, 0.45);
+    }
+
+    .person {
+      position: absolute;
+      left: 50%;
+      bottom: 1.3rem;
+      width: 190px;
+      height: 285px;
+      transform: translateX(-50%);
+    }
+
+    .head, .torso, .arm, .leg, .foot {
+      position: absolute;
+      background: #ffd09b;
+      border: 3px solid #2a1638;
+    }
+
+    .head { top: 0; left: 66px; width: 58px; height: 58px; border-radius: 50%; }
+    .torso { top: 62px; left: 52px; width: 86px; height: 115px; border-radius: 35% 35% 18% 18%; background: #ff6ab7; }
+    .arm { top: 80px; width: 36px; height: 105px; border-radius: 999px; background: #ffd09b; }
+    .arm.left { left: 24px; transform: rotate(14deg); }
+    .arm.right { right: 24px; transform: rotate(-14deg); }
+    .leg { top: 168px; width: 38px; height: 88px; border-radius: 999px; background: #4d74ff; }
+    .leg.left { left: 55px; transform: rotate(5deg); }
+    .leg.right { right: 55px; transform: rotate(-5deg); }
+
+    .foot {
+      bottom: 0;
+      width: 64px;
+      height: 34px;
+      border-radius: 999px 999px 14px 14px;
+      background: #2a1638;
+      cursor: pointer;
+      color: white;
+      font-size: 0.72rem;
+    }
+
+    .foot.left { left: 30px; }
+    .foot.right { right: 30px; }
+    .foot:focus-visible, .sun:focus-visible, button:focus-visible { outline: 4px solid var(--yellow); outline-offset: 4px; }
+
+    .controls { padding: 1rem; }
+    .controls h2 { margin: 0 0 0.75rem; }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 0.8rem 1rem;
+      font: inherit;
+      font-weight: 800;
+      color: #1d1d1f;
+      background: #f4f4f4;
+      cursor: pointer;
+      border: 1px solid #c9c9c9;
+      box-shadow: 0 0.22rem 0 #b8b8b8;
+    }
+
+    button:hover { transform: translateY(-0.12rem) rotate(var(--wiggle, 0deg)); }
+    .weather-btn:nth-child(2n) { --wiggle: 4deg; }
+    .weather-btn:nth-child(odd) { --wiggle: -4deg; }
+    .decoy { background: var(--pink); box-shadow-color: #8d006f; }
+    .runner { position: relative; transition: transform 180ms ease; }
+
+    .feedback {
+      grid-column: 1 / -1;
+      min-height: 4.5rem;
+      padding: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .hint { opacity: 0; transition: opacity 300ms ease; }
+    .hint.visible { opacity: 1; }
+
+    @keyframes wobble {
+      from { transform: rotate(-1deg) scale(1); }
+      to { transform: rotate(1deg) scale(1.01); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 760px) {
+      .captcha { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="verify-shell">
+      <div>
+        <h1>Verifying you are human. This may take a few seconds.</h1>
+        <div class="verify-widget" aria-label="Human verification widget">
+          <div class="verify-row">
+            <button id="verifyCheck" class="verify-check" type="button" aria-label="Verify you are human"></button>
+            <span id="verifyText" class="verify-text">Verify you are human</span>
+            <div class="brand" aria-label="Cloudflare-inspired fake brand">
+              <span class="cloud" aria-hidden="true"></span>
+              <strong>CLOUDFLARE</strong>
+              <a href="#challengeArea">Privacy</a> · <a href="#challengeArea">Terms</a>
+            </div>
+          </div>
+        </div>
+        <p class="intro">A fake verification panel. The actual annoying challenge appears only after you click the checkbox.</p>
+      </div>
+    </div>
+
+    <section id="challengeArea" class="challenge-area" aria-label="Annoying challenge area">
+      <p class="challenge-title">Additional verification required. Sorry about the nonsense.</p>
+      <div class="captcha" aria-labelledby="prompt">
+      <div class="prompt-card">
+        <p class="prompt-label">Current challenge</p>
+        <h2 id="prompt"></h2>
+        <p id="hint" class="hint">Hint appears after a moment because the CAPTCHA committee is dramatic.</p>
+      </div>
+
+      <div id="stage" class="stage sunny" aria-label="Interactive weather and character scene">
+        <button id="sun" class="sun" type="button" aria-label="Make the sun disappear"></button>
+        <div id="weatherSymbol" class="weather-symbol" aria-hidden="true">☀️</div>
+        <div class="person" aria-label="Character with clickable feet">
+          <div class="head"></div>
+          <div class="torso"></div>
+          <div class="arm left"></div>
+          <div class="arm right"></div>
+          <div class="leg left"></div>
+          <div class="leg right"></div>
+          <button class="foot left" type="button" data-action="left-foot">left foot</button>
+          <button class="foot right" type="button" data-action="right-foot">right foot</button>
+        </div>
+      </div>
+
+      <div class="controls">
+        <h2>Suspicious weather controls</h2>
+        <div class="button-row" aria-label="Weather choices">
+          <button class="weather-btn" type="button" data-weather="sunny">Sunny</button>
+          <button class="weather-btn" type="button" data-weather="rainy">Rainy</button>
+          <button class="weather-btn" type="button" data-weather="stormy">Stormy</button>
+          <button class="weather-btn" type="button" data-weather="snowy">Snowy</button>
+          <button class="decoy runner" type="button" data-action="decoy">Definitely verify</button>
+        </div>
+      </div>
+
+        <div id="feedback" class="feedback" role="status" aria-live="polite">Waiting for your very serious proof of humanity.</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const challenges = [
+      { prompt: 'Click on the left foot', action: 'left-foot', hint: 'It is the character\'s left foot, on your left side of the screen.' },
+      { prompt: 'Click on the right foot', action: 'right-foot', hint: 'The correct shoe says “right foot.” Shockingly literal.' },
+      { prompt: 'Change the weather to stormy', action: 'weather:stormy', hint: 'Use the Stormy weather button. Ignore the dramatic pink decoy.' },
+      { prompt: 'Change the weather to rainy', action: 'weather:rainy', hint: 'Rainy is less thunderous than stormy, but still gloomy enough.' },
+      { prompt: 'Change the weather to snowy', action: 'weather:snowy', hint: 'Pick Snowy and enjoy the fake chill.' },
+      { prompt: 'Make the sun disappear', action: 'sun-hide', hint: 'Click the bright yellow circle in the sky.' }
+    ];
+
+    const verifyCheckEl = document.querySelector('#verifyCheck');
+    const verifyTextEl = document.querySelector('#verifyText');
+    const challengeAreaEl = document.querySelector('#challengeArea');
+    const promptEl = document.querySelector('#prompt');
+    const feedbackEl = document.querySelector('#feedback');
+    const hintEl = document.querySelector('#hint');
+    const stageEl = document.querySelector('#stage');
+    const sunEl = document.querySelector('#sun');
+    const weatherSymbolEl = document.querySelector('#weatherSymbol');
+    const runnerEl = document.querySelector('.runner');
+    const weatherSymbols = { sunny: '☀️', rainy: '🌧️', stormy: '⛈️', snowy: '❄️' };
+    let currentChallenge;
+    let hintTimer;
+
+    function setWeather(weather) {
+      stageEl.className = `stage ${weather}`;
+      weatherSymbolEl.textContent = weatherSymbols[weather];
+      sunEl.classList.toggle('hidden', weather !== 'sunny');
+    }
+
+    function pickChallenge() {
+      clearTimeout(hintTimer);
+      hintEl.classList.remove('visible');
+      const next = challenges[Math.floor(Math.random() * challenges.length)];
+      currentChallenge = next === currentChallenge ? challenges[(challenges.indexOf(next) + 1) % challenges.length] : next;
+      promptEl.textContent = currentChallenge.prompt;
+      hintEl.textContent = currentChallenge.hint;
+      feedbackEl.textContent = 'Waiting for your very serious proof of humanity.';
+      setWeather('sunny');
+      hintTimer = setTimeout(() => hintEl.classList.add('visible'), 4500);
+    }
+
+    function validate(action) {
+      if (action === currentChallenge.action) {
+        feedbackEl.textContent = '✅ Accepted. Generating another needlessly picky challenge...';
+        setTimeout(pickChallenge, 1100);
+      } else {
+        feedbackEl.textContent = '❌ Incorrect. The CAPTCHA goblin quietly judges this choice.';
+      }
+    }
+
+    document.querySelectorAll('.foot').forEach((foot) => {
+      foot.addEventListener('click', () => validate(foot.dataset.action));
+    });
+
+    document.querySelectorAll('.weather-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        setWeather(button.dataset.weather);
+        validate(`weather:${button.dataset.weather}`);
+      });
+    });
+
+    sunEl.addEventListener('click', () => {
+      sunEl.classList.add('hidden');
+      validate('sun-hide');
+    });
+
+    runnerEl.addEventListener('pointerenter', () => {
+      const x = Math.round(Math.random() * 42 - 21);
+      const y = Math.round(Math.random() * 30 - 15);
+      runnerEl.style.transform = `translate(${x}px, ${y}px) rotate(${x / 3}deg)`;
+    });
+
+    runnerEl.addEventListener('click', () => validate('decoy'));
+
+    verifyCheckEl.addEventListener('click', () => {
+      verifyCheckEl.classList.add('is-spinning');
+      verifyTextEl.textContent = 'Verifying...';
+      setTimeout(() => {
+        verifyCheckEl.classList.remove('is-spinning');
+        verifyCheckEl.classList.add('is-done');
+        verifyTextEl.textContent = 'Almost there...';
+        challengeAreaEl.classList.add('is-visible');
+        challengeAreaEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 1200);
+    });
+
+    pickChallenge();
+  </script>
+</body>
+</html>
