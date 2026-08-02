@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tiny Garden</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; display: grid; place-items: center; font-family: ui-sans-serif, system-ui, sans-serif; background: linear-gradient(#bae6fd 0 48%, #86efac 48%); color: #14342b; }
+    main { width: min(720px, calc(100% - 2rem)); text-align: center; }
+    h1 { font-size: clamp(2.4rem, 9vw, 5.5rem); margin: 0 0 0.5rem; }
+    .garden { position: relative; min-height: 22rem; margin: 1.5rem 0; border: 0.7rem solid #7c2d12; border-radius: 2rem; background: linear-gradient(#65a30d 0 18%, #854d0e 18%); box-shadow: inset 0 1rem 2rem #0002, 0 1.5rem 3rem #14532d55; cursor: crosshair; overflow: hidden; }
+    .flower { position: absolute; transform: translate(-50%, -100%); font-size: 2.4rem; animation: pop 280ms ease-out; user-select: none; }
+    button, a { display: inline-block; margin: 0.25rem; padding: 0.8rem 1rem; border: 0; border-radius: 999px; background: #166534; color: white; font-weight: 800; text-decoration: none; cursor: pointer; }
+    @keyframes pop { from { transform: translate(-50%, -75%) scale(0); } to { transform: translate(-50%, -100%) scale(1); } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Tiny Garden</h1>
+    <p>Click the soil to plant a cheerful flower.</p>
+    <div class="garden" id="garden" role="img" aria-label="Clickable garden bed"></div>
+    <button id="clear" type="button">Clear garden</button>
+    <a href="index.html">Back to Cool HTMLs</a>
+  </main>
+  <script>
+    const blooms = ['🌷', '🌻', '🌼', '🪻', '🌸'];
+    const garden = document.querySelector('#garden');
+    garden.addEventListener('click', (event) => {
+      const flower = document.createElement('span');
+      const bounds = garden.getBoundingClientRect();
+      flower.className = 'flower';
+      flower.textContent = blooms[Math.floor(Math.random() * blooms.length)];
+      flower.style.left = `${event.clientX - bounds.left}px`;
+      flower.style.top = `${event.clientY - bounds.top}px`;
+      garden.append(flower);
+    });
+    document.querySelector('#clear').addEventListener('click', () => garden.replaceChildren());
+  </script>
+</body>
+</html>
